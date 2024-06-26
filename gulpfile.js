@@ -7,6 +7,7 @@ const cssnano = require('cssnano');
 const babel = require('gulp-babel');
 const terser = require('gulp-terser');
 const browsersync = require('browser-sync').create();
+const gulp = require('gulp');
 
 // Use dart-sass for @use
 //sass.compiler = require('dart-sass');
@@ -58,6 +59,18 @@ function watchTask() {
 
 // Default Gulp Task
 exports.default = series(scssTask, jsTask, browserSyncServe, watchTask);
-
 // Build Gulp Task
 exports.build = series(scssTask, jsTask);
+
+
+gulp.task('sass', function() {
+    return gulp.src('src/scss/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('watch', function() {
+    gulp.watch('src/scss/**/*.scss', gulp.series('sass'));
+});
+
+gulp.task('default', gulp.series('sass', 'watch'));
